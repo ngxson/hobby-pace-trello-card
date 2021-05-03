@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.PowerManager
 import android.view.WindowManager
 import android.widget.ArrayAdapter
 import android.widget.ListView
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         adapter.updateData()
         swipeRefreshLayout.isRefreshing = false
     }
+    private lateinit var wakeLock: PowerManager.WakeLock
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,12 +43,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_fullscreen)
         supportActionBar?.hide()
 
+        val powerManager = this.getSystemService(POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "TrelloCard:KeepAwakeDim")
+        wakeLock.acquire(60 * 60 * 1000L)
+
         swipeRefreshLayout = findViewById(R.id.swipetorefresh)
         listView = findViewById(R.id.listView)
         sharedPref = this.getSharedPreferences("pref", Context.MODE_PRIVATE)
 
         val listItems = Array<String>(1, { "" } )
-        listItems[0] = ""
         adapter = CardArrayAdapter(this, R.layout.main_view, listItems, sharedPref)
         listView.adapter = adapter
 
@@ -55,19 +60,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun fetchCard() {
+    private fun fetchCard() {
         val localURLConnection = LocalURLConnection()
         localURLConnection.isDoOutput = false
         localURLConnection.isUseCaches = false
 
         try {
             val params = utils.getParams(this)
-            val card = params[0]
-            val key = params[1]
-            val token = params[2]
+            val key = params[0]
+            val token = params[1]
+            val card = params[2]
             localURLConnection.url = URL("https://api.trello.com/1/cards/${card}?key=${key}&token=${token}")
         } catch (e: Exception) {
+            Toast.makeText(this, "Unknown Error", Toast.LENGTH_SHORT).show()
             e.printStackTrace()
+            this.runOnUiThread(renderNote)
         }
 
         LocalHTTPRequest(this, localURLConnection, object : LocalHTTPResponse {
@@ -76,12 +83,14 @@ class MainActivity : AppCompatActivity() {
                     var response = IOUtils.toString(httpURLConnection.getInputStream())
                     val convertedObject: JsonObject = Gson().fromJson(response, JsonObject::class.java)
                     var desc: String = convertedObject.get("desc").asString
+                    var name: String = convertedObject.get("name").asString
 
                     val formatter = SimpleDateFormat("dd/MM HH:mm")
                     val date = Date()
 
                     sharedPref.edit()
-                            .putString("content", desc)
+                            .putString("name", name)
+                            .putString("desc", desc)
                             .putString("updated", formatter.format(date))
                             .apply()
                 } catch (e: IOException) {
@@ -102,4 +111,19 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        adapter.updateClock()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        adapter.stopClock()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        adapter.stopClock()
+        wakeLock.release()
+    }
 }

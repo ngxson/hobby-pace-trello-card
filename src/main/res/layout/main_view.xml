@@ -23,16 +23,28 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:text="Updated at XX:XX - XX/XX"
+        android:text="Last updated: XX:XX XX/XX"
         android:textAlignment="center"
-        android:textColor="#636363"
-        android:textSize="14sp" />
+        android:textColor="#979797"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/card_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="2dp"
+        android:shadowColor="#FFFFFF"
+        android:text="the title"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
+        android:layout_marginBottom="80dp"
         android:shadowColor="#FFFFFF"
         android:text="the content"
         android:textAlignment="center"
