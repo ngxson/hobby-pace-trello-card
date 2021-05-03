@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.annotation.LayoutRes
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.ceil
 
 class CardArrayAdapter(
     context: Context,
@@ -42,8 +43,8 @@ class CardArrayAdapter(
     }
 
     private fun getNextRunTime(): Long {
-        val now = Date().time
-        return now + (60000 - (now % 60000))
+        val nowMinutes: Double = Date().time.toDouble() / 60000
+        return ceil(nowMinutes).toLong() * 60000
     }
 
     fun updateData() {
