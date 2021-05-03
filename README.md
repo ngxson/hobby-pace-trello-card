@@ -44,4 +44,4 @@ Copy and paste this file to the root directory of your watch (/sdcard/)
 
 ### Sync data
 
-Simple only the app on your watch. Swipe down from the top.
+Simple open the app on your watch. Swipe down from the top.
