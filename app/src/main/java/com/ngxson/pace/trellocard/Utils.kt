@@ -6,6 +6,8 @@ import android.util.Log
 import android.widget.Toast
 import java.io.*
 import java.lang.Exception
+import java.util.*
+import kotlin.math.ceil
 
 class Utils {
     fun getParams(ctx: Context): List<String> {
@@ -44,5 +46,12 @@ class Utils {
         }
 
         return "";
+    }
+
+    fun getDelayTimeForClock(): Long {
+        val now = Date().time
+        val nowMinutes: Double = now.toDouble() / 60000
+        val nextRunTime = ceil(nowMinutes).toLong() * 60000
+        return nextRunTime - now + 1000
     }
 }

@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
 import android.os.PowerManager
 import android.view.WindowManager
 import android.widget.ArrayAdapter
 import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -29,12 +31,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listView: ListView
     private lateinit var sharedPref: SharedPreferences
     private lateinit var adapter: CardArrayAdapter
+    private lateinit var clockTextView: TextView
     private val utils: Utils = Utils()
     private var renderNote: Runnable = Runnable {
         adapter.updateData()
         swipeRefreshLayout.isRefreshing = false
     }
     private lateinit var wakeLock: PowerManager.WakeLock
+    private var runnableUpdateClock = Runnable { }
+    private var mHandler: Handler = Handler()
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         wakeLock.acquire(60 * 60 * 1000L)
 
         swipeRefreshLayout = findViewById(R.id.swipetorefresh)
+        clockTextView = findViewById(R.id.clock)
         listView = findViewById(R.id.listView)
         sharedPref = this.getSharedPreferences("pref", Context.MODE_PRIVATE)
 
@@ -58,6 +64,9 @@ class MainActivity : AppCompatActivity() {
         swipeRefreshLayout.setOnRefreshListener {
             fetchCard()
         }
+
+        runnableUpdateClock = Runnable { updateClock() }
+        runnableUpdateClock.run()
     }
 
     private fun fetchCard() {
@@ -111,19 +120,31 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun updateClock() {
+        val formatter = SimpleDateFormat("HH:mm")
+        val date = Date()
+        clockTextView.text = formatter.format(date)
+        mHandler.removeCallbacksAndMessages(null)
+        mHandler.postDelayed(runnableUpdateClock, utils.getDelayTimeForClock())
+    }
+
+    private fun stopClock() {
+        mHandler.removeCallbacksAndMessages(null)
+    }
+
     override fun onResume() {
         super.onResume()
-        adapter.updateClock()
+        updateClock()
     }
 
     override fun onPause() {
         super.onPause()
-        adapter.stopClock()
+        stopClock()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        adapter.stopClock()
+        stopClock()
         wakeLock.release()
     }
 }
