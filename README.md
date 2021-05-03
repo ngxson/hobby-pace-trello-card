@@ -3,6 +3,8 @@
 This app allow you to sync a card on Trello to your watch.  
 It uses [Amazfit Internet Companion](https://forum.xda-developers.com/t/app-amazfit-internet-companion-generic-internet-companion-app-for-pace-stratos.3779945/) lib, so you don't need to connect your watch to a wifi network. You only need [Amazmod](https://github.com/AmazMod/AmazMod) installed on your phone.
 
+Download APK file from [release page](https://github.com/ngxson/hobby-pace-trello-card/releases)
+
 # How to use
 
 Notice: **Amazfit Internet Companion** support must be enabled on Amazfit. Open Amazmod app on your phone > Settings. Scroll to bottom and enable "Amazfit Internet Companion"
