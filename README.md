@@ -5,6 +5,8 @@ It uses [Amazfit Internet Companion](https://forum.xda-developers.com/t/app-amaz
 
 Download APK file from [release page](https://github.com/ngxson/hobby-pace-trello-card/releases)
 
+![image](https://user-images.githubusercontent.com/7702203/116854255-b06ae780-abf7-11eb-9bb8-de92d0d096de.png)
+
 # How to use
 
 Notice: **Amazfit Internet Companion** support must be enabled on Amazfit. Open Amazmod app on your phone > Settings. Scroll to bottom and enable "Amazfit Internet Companion"
